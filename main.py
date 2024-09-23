@@ -6,7 +6,7 @@ import os
 import threading
 import time
 
-
+import server
 
 # Create FastAPI instance
 app = FastAPI()
@@ -30,6 +30,10 @@ def shutdown():
     
     threading.Thread(target=shutdown_server).start()
     return {"message": "Server is shutting down..."}
+
+@app.get("/items")
+def getItems():
+    return server.get_items()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
