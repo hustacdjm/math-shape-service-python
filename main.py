@@ -10,9 +10,21 @@ import time
 import sys
 import logging
 from auth import set_api_token, verify_token
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create FastAPI instance
 app = FastAPI()
+
+
+# Add CORS middleware to allow all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],   # Allow all headers
+)
+
 
 # Define a route
 @app.get("/status", dependencies=[Depends(verify_token)])
