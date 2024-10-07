@@ -41,6 +41,7 @@ if __name__ == "__main__":
 
     extra_args = sys.argv[1:]
 
+    KEY="localtest"
     if "--key" in extra_args:
         key_index = extra_args.index("--key") + 1
         KEY = extra_args[key_index]
