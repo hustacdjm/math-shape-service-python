@@ -3,12 +3,17 @@ from fastapi.security import APIKeyHeader
 
 # Initialize a variable to hold the API token
 API_TOKEN = None
+WORKER_ID = None
 
 api_key_header = APIKeyHeader(name="X-API-TOKEN")
 
 def set_api_token(token: str):
     global API_TOKEN
     API_TOKEN = token
+
+def set_api_workerId(workerId: str):
+    global WORKER_ID
+    WORKER_ID = workerId
 
 def verify_token(api_key: str = Depends(api_key_header)):
     if API_TOKEN is None:

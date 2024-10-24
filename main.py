@@ -9,7 +9,7 @@ import threading
 import time
 import sys
 import logging
-from auth import set_api_token, verify_token
+from auth import set_api_token, set_api_workerId, verify_token
 from fastapi.middleware.cors import CORSMiddleware
 
 # Create FastAPI instance
@@ -60,6 +60,11 @@ if __name__ == "__main__":
         key_index = extra_args.index("--key") + 1
         KEY = extra_args[key_index]
         set_api_token(KEY)
+
+    if "--workerId" in extra_args:
+        key_index = extra_args.index("--workerId") + 1
+        workerId = extra_args[key_index]
+        set_api_workerId(workerId)
 
     logging.basicConfig(level=logging.INFO)
     logging.info("KEY:" + KEY)
