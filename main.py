@@ -18,7 +18,7 @@ import time
 
 
 # beat heart
-url = "http://localhost:8080/heartbeat"
+url = "http://localhost:8080/v3/edu/AnyConnectClient/heartbeat"
 WORKER_STATUS = "OK"
 
 # Create FastAPI instance
