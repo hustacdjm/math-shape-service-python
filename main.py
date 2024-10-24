@@ -9,8 +9,17 @@ import threading
 import time
 import sys
 import logging
-from auth import set_api_token, set_api_workerId, verify_token
+from auth import set_api_token, set_api_workerId, verify_token, WORKER_ID, API_TOKEN
 from fastapi.middleware.cors import CORSMiddleware
+from apscheduler.schedulers.background import BackgroundScheduler
+import requests
+import json
+import time
+
+
+# beat heart
+url = "http://localhost:8080/heartbeat"
+WORKER_STATUS = "OK"
 
 # Create FastAPI instance
 app = FastAPI()
@@ -25,6 +34,15 @@ app.add_middleware(
     allow_headers=["*"],   # Allow all headers
 )
 
+def send_heartbeat(payload, headers):
+    try:
+        response = requests.post(url, data=json.dumps(payload), headers=headers)
+        if response.status_code == 200:
+            print(f"Heartbeat sent successfully: {response.status_code}")
+        else:
+            print(f"Failed to send heartbeat: {response.status_code}, {response.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending heartbeat: {e}")
 
 # Define a route
 @app.get("/status", dependencies=[Depends(verify_token)])
@@ -72,4 +90,24 @@ if __name__ == "__main__":
     if KEY is None:
         sys.exit(1)
    
+    payload = {
+        "workerId": WORKER_ID, 
+        "status": WORKER_STATUS
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "X-API-TOKEN": API_TOKEN
+    }
+
+    # Create a scheduler that runs in the background
+    scheduler = BackgroundScheduler()
+    
+    # Schedule the job to run every 20 seconds
+    scheduler.add_job(send_heartbeat, 'interval', seconds=20, args=[payload, headers])
+    
+    # Start the scheduler
+    scheduler.start()
+
+    print("Heartbeat scheduler started, will not block the main thread.")
+
     uvicorn.run(app, host="0.0.0.0", port=0)
