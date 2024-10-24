@@ -9,7 +9,7 @@ import threading
 import time
 import sys
 import logging
-from auth import set_api_token, set_api_workerId, verify_token, WORKER_ID, API_TOKEN
+from auth import set_api_token, verify_token
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
@@ -79,13 +79,14 @@ if __name__ == "__main__":
         KEY = extra_args[key_index]
         set_api_token(KEY)
 
+    WORKER_ID=None
     if "--workerId" in extra_args:
         key_index = extra_args.index("--workerId") + 1
-        workerId = extra_args[key_index]
-        set_api_workerId(workerId)
+        WORKER_ID = extra_args[key_index]        
 
     logging.basicConfig(level=logging.INFO)
     logging.info("KEY:" + KEY)
+    logging.info("WORKER_id:" + WORKER_ID)
 
     if KEY is None:
         sys.exit(1)
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     }
     headers = {
         "Content-Type": "application/json",
-        "X-API-TOKEN": API_TOKEN
+        "X-API-TOKEN": KEY
     }
 
     # Create a scheduler that runs in the background
