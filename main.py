@@ -62,6 +62,7 @@ def send_heartbeat():
         response = requests.post(WORKER_URL, data=json.dumps(payload), headers=headers)
         if response.status_code == 200:
             print(f"Heartbeat sent successfully: {response.status_code}")
+            WORKER_PORT=response.text
         else:
             print(f"Failed to send heartbeat: {response.status_code}, {response.text}")
     except requests.exceptions.RequestException as e:
@@ -136,10 +137,10 @@ if __name__ == "__main__":
     
     # Schedule the job to run every 20 seconds
     scheduler.add_job(send_heartbeat, 'interval', seconds=20)
-    
-    # Start the scheduler
-    scheduler.start()
 
     print("Heartbeat scheduler started, will not block the main thread.")
 
     uvicorn.run(app, host="0.0.0.0", port=0)
+
+     # Start the scheduler
+    scheduler.start()
