@@ -140,7 +140,9 @@ if __name__ == "__main__":
 
     print("Heartbeat scheduler started, will not block the main thread.")
 
+    # Start the scheduler
+    scheduler.start()
+
     uvicorn.run(app, host="0.0.0.0", port=0)
 
-     # Start the scheduler
-    scheduler.start()
+
