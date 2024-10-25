@@ -138,10 +138,10 @@ if __name__ == "__main__":
     # Schedule the job to run every 20 seconds
     scheduler.add_job(send_heartbeat, 'interval', seconds=20)
 
-    print("Heartbeat scheduler started, will not block the main thread.")
-
     # Start the scheduler
     scheduler.start()
+
+    print("Heartbeat scheduler started, will not block the main thread.")
 
     uvicorn.run(app, host="0.0.0.0", port=0)
 
