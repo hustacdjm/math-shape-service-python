@@ -44,6 +44,9 @@ app.add_middleware(
 )
 
 def send_heartbeat():
+
+    global WORKER_PORT  # Ensure that we're modifying the global variable
+
     payload = {
         "workerId": WORKER_ID, 
         "proxyhost": WORKER_HOST,
@@ -61,6 +64,7 @@ def send_heartbeat():
     try:
         response = requests.post(WORKER_URL, data=json.dumps(payload), headers=headers)
         if response.status_code == 200:
+            WORKER_PORT=response.text
             print(f"Heartbeat sent successfully: {response.status_code}")            
         else:
             print(f"Failed to send heartbeat: {response.status_code}, {response.text}")
