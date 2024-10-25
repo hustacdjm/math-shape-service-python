@@ -17,8 +17,17 @@ import json
 import time
 
 
+KEY="localtest"
 # beat heart
-url = "http://localhost:8080/v3/edu/AnyConnectClient/heartbeat"
+WORKER_URL = "http://localhost:8080/v3/edu/AnyConnectClient/heartbeat"
+WORKER_ID = None
+WORKER_HOST=None
+WORKER_IP = None
+WORKER_NAME=None
+WORKER_VERSION=None
+WORKER_PORT=None
+WORKER_ROUTE=None
+WORKER_ROUTE_VERSION=None
 WORKER_STATUS = "OK"
 
 # Create FastAPI instance
@@ -34,9 +43,23 @@ app.add_middleware(
     allow_headers=["*"],   # Allow all headers
 )
 
-def send_heartbeat(payload, headers):
+def send_heartbeat():
+    payload = {
+        "workerId": WORKER_ID, 
+        "host": WORKER_HOST,
+        "workerName": WORKER_NAME,
+        "workerVersion": WORKER_VERSION,
+        "port": WORKER_PORT,
+        "route":WORKER_ROUTE,
+        "routeVersion":WORKER_ROUTE_VERSION,        
+        "status": WORKER_STATUS
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "X-API-TOKEN": KEY
+    }
     try:
-        response = requests.post(url, data=json.dumps(payload), headers=headers)
+        response = requests.post(WORKER_URL, data=json.dumps(payload), headers=headers)
         if response.status_code == 200:
             print(f"Heartbeat sent successfully: {response.status_code}")
         else:
@@ -73,16 +96,33 @@ if __name__ == "__main__":
 
     print("Extra arguments:", extra_args)
 
-    KEY="localtest"
+    
     if "--key" in extra_args:
         key_index = extra_args.index("--key") + 1
         KEY = extra_args[key_index]
         set_api_token(KEY)
 
-    WORKER_ID=None
     if "--workerId" in extra_args:
         key_index = extra_args.index("--workerId") + 1
         WORKER_ID = extra_args[key_index]        
+    if "--workerHost" in extra_args:
+        key_index = extra_args.index("--workerHost") + 1
+        WORKER_HOST = extra_args[key_index]        
+    if "--workerName" in extra_args:
+        key_index = extra_args.index("--workerName") + 1
+        WORKER_NAME = extra_args[key_index]        
+    if "--workerVersion" in extra_args:
+        key_index = extra_args.index("--workerVersion") + 1
+        WORKER_VERSION = extra_args[key_index]        
+    if "--workerPort" in extra_args:
+        key_index = extra_args.index("--workerPort") + 1
+        WORKER_PORT = extra_args[key_index]        
+    if "--workerRoute" in extra_args:
+        key_index = extra_args.index("--workerRoute") + 1
+        WORKER_ROUTE = extra_args[key_index]        
+    if "--workerRouteVersion" in extra_args:
+        key_index = extra_args.index("--workerRouteVersion") + 1
+        WORKER_ROUTE_VERSION = extra_args[key_index]        
 
     logging.basicConfig(level=logging.INFO)
     logging.info("KEY:" + KEY)
@@ -91,20 +131,11 @@ if __name__ == "__main__":
     if KEY is None:
         sys.exit(1)
    
-    payload = {
-        "workerId": WORKER_ID, 
-        "status": WORKER_STATUS
-    }
-    headers = {
-        "Content-Type": "application/json",
-        "X-API-TOKEN": KEY
-    }
-
     # Create a scheduler that runs in the background
     scheduler = BackgroundScheduler()
     
     # Schedule the job to run every 20 seconds
-    scheduler.add_job(send_heartbeat, 'interval', seconds=20, args=[payload, headers])
+    scheduler.add_job(send_heartbeat, 'interval', seconds=20)
     
     # Start the scheduler
     scheduler.start()
