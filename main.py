@@ -46,7 +46,7 @@ app.add_middleware(
 def send_heartbeat():
     payload = {
         "workerId": WORKER_ID, 
-        "host": WORKER_HOST,
+        "proxyhost": WORKER_HOST,
         "workerName": WORKER_NAME,
         "workerVersion": WORKER_VERSION,
         "port": WORKER_PORT,
