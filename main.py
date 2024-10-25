@@ -28,7 +28,7 @@ WORKER_VERSION=None
 WORKER_PORT=None
 WORKER_ROUTE=None
 WORKER_ROUTE_VERSION=None
-WORKER_STATUS = "OK"
+WORKER_STATUS = "Active"
 
 # Create FastAPI instance
 app = FastAPI()
