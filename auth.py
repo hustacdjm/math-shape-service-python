@@ -5,7 +5,7 @@ from fastapi.security import APIKeyHeader
 API_TOKEN = None
 WORKER_ID = None
 
-api_key_header = APIKeyHeader(name="X-API-TOKEN")
+api_key_header = APIKeyHeader(name="x-api-token")
 
 def set_api_token(token: str):
     global API_TOKEN

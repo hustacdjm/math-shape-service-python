@@ -19,8 +19,8 @@ import time
 
 KEY="localtest"
 # beat heart
-WORKER_URL = "http://localhost:8080/v3/edu/AnyConnectClient/heartbeat"
-WORKER_ID = None
+WORKER_URL = "http://localhost:10701/v3/edu/AnyConnectClient/heartbeat"
+WORKER_ID = "localtest"
 WORKER_HOST=None
 WORKER_IP = None
 WORKER_NAME=None
@@ -104,7 +104,8 @@ if __name__ == "__main__":
     if "--key" in extra_args:
         key_index = extra_args.index("--key") + 1
         KEY = extra_args[key_index]
-        set_api_token(KEY)
+    
+    set_api_token(KEY)
 
     if "--workerId" in extra_args:
         key_index = extra_args.index("--workerId") + 1
@@ -132,20 +133,18 @@ if __name__ == "__main__":
     logging.info("KEY:" + KEY)
     logging.info("WORKER_id:" + WORKER_ID)
 
-    if KEY is None:
-        sys.exit(1)
-   
-    # Create a scheduler that runs in the background
-    scheduler = BackgroundScheduler()
+    if KEY != 'localtest':
+        # Create a scheduler that runs in the background
+        scheduler = BackgroundScheduler()
     
-    # Schedule the job to run every 20 seconds
-    scheduler.add_job(send_heartbeat, 'interval', seconds=20)
+        # Schedule the job to run every 20 seconds
+        scheduler.add_job(send_heartbeat, 'interval', seconds=20)
 
-    # Start the scheduler
-    scheduler.start()
+        # Start the scheduler
+        scheduler.start()
 
-    print("Heartbeat scheduler started, will not block the main thread.")
-
+        print("Heartbeat scheduler started, will not block the main thread.")
+   
     uvicorn.run(app, host="0.0.0.0", port=0)
 
 
