@@ -55,7 +55,8 @@ def send_heartbeat():
         "port": WORKER_PORT,
         "route":WORKER_ROUTE,
         "routeVersion":WORKER_ROUTE_VERSION,        
-        "status": WORKER_STATUS
+        "status": WORKER_STATUS,
+        "type": KEY
     }
     headers = {
         "Content-Type": "application/json",
