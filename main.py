@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.security import APIKeyHeader
-from routes import router  # Import the routes
+
+from fastapi import FastAPI, Header, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
 import signal
@@ -9,12 +9,12 @@ import threading
 import time
 import sys
 import logging
-from auth import set_api_token, verify_token
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
 import json
 import time
+import server
 
 
 KEY="localtest"
@@ -33,15 +33,20 @@ WORKER_STATUS = "Active"
 # Create FastAPI instance
 app = FastAPI()
 
-
-# Add CORS middleware to allow all origins
+# Add CORS middleware if you're calling API from browser (for testing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"],  # Set specific domains in production
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],   # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],  # Important to allow 'x-api-key'
 )
+
+# Function to check API key
+def get_api_key(x_api_key: str = Header(None)):
+    if x_api_key != KEY:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    return x_api_key
 
 def send_heartbeat():
 
@@ -73,18 +78,18 @@ def send_heartbeat():
         print(f"Error sending heartbeat: {e}")
 
 # Define a route
-@app.get("/status", dependencies=[Depends(verify_token)])
-def read_root():
-    return {"status": "OK"}
+@app.get("/status")
+async def get_status(api_key: str = Depends(get_api_key)):
+    return {"message": "Access granted to secure data!"}
 
 # Define a route
-@app.get("/sayHello", dependencies=[Depends(verify_token)])
+@app.get("/sayHello")
 def read_root():
     return {"message": "Hello, World!"}
 
 
-@app.post("/shutdown", dependencies=[Depends(verify_token)])
-def shutdown():
+@app.post("/shutdown")
+async def shutdown(api_key: str = Depends(get_api_key)):
     def shutdown_server():
         time.sleep(1)
         os.kill(os.getpid(), signal.SIGINT)
@@ -92,8 +97,10 @@ def shutdown():
     threading.Thread(target=shutdown_server).start()
     return {"message": "Server is shutting down..."}
 
-# Include the router from routes.py
-app.include_router(router)
+@app.get("/items")
+async def get_items(api_key: str = Depends(get_api_key)):
+    return server.get_items()
+
 
 if __name__ == "__main__":
 
@@ -105,8 +112,6 @@ if __name__ == "__main__":
     if "--key" in extra_args:
         key_index = extra_args.index("--key") + 1
         KEY = extra_args[key_index]
-    
-    set_api_token(KEY)
 
     if "--workerId" in extra_args:
         key_index = extra_args.index("--workerId") + 1
