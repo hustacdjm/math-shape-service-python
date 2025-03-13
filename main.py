@@ -77,7 +77,7 @@ def send_heartbeat():
     except requests.exceptions.RequestException as e:
         print(f"Error sending heartbeat: {e}")
 
-# Define a route
+# Define a route and add new item 14
 @app.get("/status")
 async def get_status(api_key: str = Depends(get_api_key)):
     return {"message": "Access granted to secure data!"}

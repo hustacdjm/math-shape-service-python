@@ -13,3 +13,5 @@ implement the APIs
 
 python main.py
 
+how to set up the test method.
+
