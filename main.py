@@ -101,6 +101,10 @@ async def shutdown(api_key: str = Depends(get_api_key)):
 async def get_items(api_key: str = Depends(get_api_key)):
     return server.get_items()
 
+@app.get("/get_item/{itemid}")
+async def get_item(itemid: int, api_key: str = Depends(get_api_key)):
+    return server.get_item(itemid)
+
 
 if __name__ == "__main__":
 

@@ -9,6 +9,7 @@ def get_items():
     return {'items': items}
 
 def get_item(item_id):
+    print(item_id)
     item = next((item for item in items if item['id'] == item_id), None)
     if item is not None:
         return item
