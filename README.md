@@ -15,3 +15,4 @@ python main.py
 
 how to set up the test method.
 
+1. items/{id} path varible
